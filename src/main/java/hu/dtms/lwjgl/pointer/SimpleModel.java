@@ -14,7 +14,7 @@ public class SimpleModel {
         return vaoId;
     }
 
-    public int getVertexCount() {
+    public int getIndexCount() {
         return vertexCount;
     }
 }

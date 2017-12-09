@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +16,21 @@ public class Loader {
     private List<Integer> vaoIds = new ArrayList<>();
     private List<Integer> vboIds = new ArrayList<>();
 
-    public SimpleModel loadSimpleModel(float[] vertices) {
+    public SimpleModel loadSimpleModel(float[] vertices, int[] indices) {
         int vaoId = createVAO();
         bindVAO(vaoId);
-        storeDataInVAO(0, vertices, VERTEX_SIZE);
+        loadIndicesToBuffer(indices);
+        loadVerticesInVAO(vaoId, 0, vertices, VERTEX_SIZE);
         unbindVAO();
-        return new SimpleModel(vaoId, vertices.length / VERTEX_SIZE);
+        return new SimpleModel(vaoId, indices.length);
+    }
+
+    private void loadIndicesToBuffer(int[] indices) {
+        int vboId = createVBO();
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboId);
+        IntBuffer intBuffer = createIntBuffer(indices);
+        GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, intBuffer, GL15.GL_STATIC_DRAW);
+        // unbind?
     }
 
     public void cleanUp() {
@@ -32,7 +42,7 @@ public class Loader {
         }
     }
 
-    private void storeDataInVAO(int attributeIndex, float[] data, int vertexSize) {
+    private void loadVerticesInVAO(int vaoId, int attributeIndex, float[] data, int vertexSize) {
         int vboId = createVBO();
         bindVBO(vboId);
         bufferDataInVBO(data);
@@ -54,6 +64,13 @@ public class Loader {
         floatBuffer.put(data);
         floatBuffer.flip();
         return floatBuffer;
+    }
+
+    private IntBuffer createIntBuffer(int[] data) {
+        IntBuffer intBuffer = BufferUtils.createIntBuffer(data.length);
+        intBuffer.put(data);
+        intBuffer.flip();
+        return intBuffer;
     }
 
     private void unbindVBO() {

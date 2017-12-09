@@ -5,8 +5,13 @@ import org.lwjgl.opengl.Display;
 public class MainLoop {
     private static final float[] VERTICES = {
             0, 0,
-            0.1f, -0.1f,
-            0.1f, 0
+            0.028f, -0.092f,
+            0.04f, -0.068f,
+            0.066f , -0.068f
+    };
+    private static final int[] INDICES = {
+            0, 1, 2,
+            0, 2, 3
     };
 
     private static Renderer renderer = new Renderer();
@@ -15,7 +20,7 @@ public class MainLoop {
 
     public static void main(String[] args) {
         DisplayManager.createDisplay();
-        simpleModel = loader.loadSimpleModel(VERTICES);
+        simpleModel = loader.loadSimpleModel(VERTICES, INDICES);
         while (!Display.isCloseRequested()) {
             renderer.prepare();
             renderer.render(simpleModel);
