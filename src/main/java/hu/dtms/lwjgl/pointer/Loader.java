@@ -11,15 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Loader {
+    private static final int VERTEX_SIZE = 2;
     private List<Integer> vaoIds = new ArrayList<>();
     private List<Integer> vboIds = new ArrayList<>();
 
     public SimpleModel loadSimpleModel(float[] vertices) {
         int vaoId = createVAO();
         bindVAO(vaoId);
-        storeDataInVAO(0, vertices, 2);
+        storeDataInVAO(0, vertices, VERTEX_SIZE);
         unbindVAO();
-        return new SimpleModel(0, vertices.length / 2);
+        return new SimpleModel(vaoId, vertices.length / VERTEX_SIZE);
     }
 
     public void cleanUp() {
