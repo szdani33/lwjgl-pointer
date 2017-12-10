@@ -16,16 +16,21 @@ public class MainLoop {
 
     private static Renderer renderer = new Renderer();
     private static Loader loader = new Loader();
+    private static ShaderProgram shaderProgram;
     private static SimpleModel simpleModel;
 
     public static void main(String[] args) {
         DisplayManager.createDisplay();
+        shaderProgram = new ShaderProgram();
         simpleModel = loader.loadSimpleModel(VERTICES, INDICES);
         while (!Display.isCloseRequested()) {
             renderer.prepare();
+            shaderProgram.start();
             renderer.render(simpleModel);
+            shaderProgram.stop();
             DisplayManager.updateDisplay();
         }
+        shaderProgram.cleanUp();
         loader.cleanUp();
         DisplayManager.closeDisplay();
     }
