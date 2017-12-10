@@ -2,6 +2,13 @@
 
 in vec2 vertex;
 
+out float d;
+
 void main() {
     gl_Position = vec4(vertex, 0.0, 1.0);
+    if (vertex.y != 0) {
+        d = (vertex.x / -vertex.y);
+    } else {
+        d = 0;
+    }
 }

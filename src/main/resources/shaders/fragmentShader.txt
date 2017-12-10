@@ -1,7 +1,10 @@
 #version 400 core
 
+in float d;
+
 out vec4 color;
 
 void main() {
-    color = vec4(.8, .8, .8, 1);
+    float c = 1.1 - d;
+    color = vec4(c, c, c, 1);
 }
