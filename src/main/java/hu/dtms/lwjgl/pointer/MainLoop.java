@@ -2,14 +2,16 @@ package hu.dtms.lwjgl.pointer;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 
 public class MainLoop {
+    private static final float SPEED = 0.005f;
 
     private static final float[] RECTANGLE_VERTICES = {
-            -.2f, .2f,
-            -.2f, 0,
-            0, 0,
-            0, .2f
+            -.1f, .25f,
+            -.1f, .05f,
+            .1f, .05f,
+            .1f, .25f
     };
     private static final int[] RECTANGLE_INDICES = {
             0, 1, 2,
@@ -44,16 +46,36 @@ public class MainLoop {
         shaderProgram = new ShaderProgram();
         pointerModel = loader.loadSimpleModel(POINTER_VERTICES, POINTER_INDICES);
         rectangleModel = loader.loadSimpleModel(RECTANGLE_VERTICES, RECTANGLE_INDICES);
+        boolean increase = true;
+        Matrix4f pointerTransformationMatrix = new Matrix4f();
+        pointerTransformationMatrix.setIdentity();
         while (!Display.isCloseRequested()) {
             renderer.prepare();
             shaderProgram.start();
             renderer.render(rectangleModel, shaderProgram, IDENTITY_MATRIX);
-            renderer.render(pointerModel, shaderProgram, IDENTITY_MATRIX);
+            increase = getDirection(pointerTransformationMatrix.m30, increase);
+            updatePointerMatrix(pointerTransformationMatrix, increase);
+            renderer.render(pointerModel, shaderProgram, pointerTransformationMatrix);
             shaderProgram.stop();
             DisplayManager.updateDisplay();
         }
         shaderProgram.cleanUp();
         loader.cleanUp();
         DisplayManager.closeDisplay();
+    }
+
+    private static boolean getDirection(float m03, boolean increase) {
+        if (m03 < -.3f && !increase || m03 > .3f && increase) {
+            return !increase;
+        }
+        return increase;
+    }
+
+    private static void updatePointerMatrix(Matrix4f pointerTransformationMatrix, boolean increase) {
+        if (increase) {
+            pointerTransformationMatrix.translate(new Vector2f(SPEED, 0));
+        } else {
+            pointerTransformationMatrix.translate(new Vector2f(SPEED * -1, 0));
+        }
     }
 }
