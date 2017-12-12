@@ -1,5 +1,7 @@
 package hu.dtms.lwjgl.pointer;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
@@ -43,6 +45,37 @@ public class MainLoop {
 
     public static void main(String[] args) {
         DisplayManager.createDisplay();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        handleMouse();
+                        handleKeyboard();
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            private void handleMouse() {
+                while (Mouse.next()) {
+                    int eventDX = Mouse.getEventDX();
+                    System.out.println(eventDX);
+                }
+            }
+
+            private void handleKeyboard() {
+                while (Keyboard.next()) {
+                    int eventKey = Keyboard.getEventKey();
+                    boolean eventKeyState = Keyboard.getEventKeyState();
+                    System.out.println(System.currentTimeMillis() + ": " + eventKey + ", " + eventKeyState);
+                }
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
         shaderProgram = new ShaderProgram();
         pointerModel = loader.loadSimpleModel(POINTER_VERTICES, POINTER_INDICES);
         rectangleModel = loader.loadSimpleModel(RECTANGLE_VERTICES, RECTANGLE_INDICES);
