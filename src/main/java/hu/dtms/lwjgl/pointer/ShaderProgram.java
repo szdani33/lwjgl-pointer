@@ -1,11 +1,14 @@
 package hu.dtms.lwjgl.pointer;
 
 import org.apache.commons.io.FileUtils;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Matrix4f;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.nio.charset.Charset;
 
 public class ShaderProgram {
@@ -13,15 +16,27 @@ public class ShaderProgram {
     private static final String SHADER_FILE_LOCATION = "src/main/resources/shaders/";
     private static final String VERTEX_SHADER_FILE = SHADER_FILE_LOCATION + "vertexShader.txt";
     private static final String FRAGMENT_SHADER_FILE = SHADER_FILE_LOCATION + "fragmentShader.txt";
+    private static final String TRANSFORMATION_MATRIX_NAME = "transformationMatrix";
+
+    private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
     private final int shaderProgramId;
     private final int vertexShaderId;
     private final int fragmentShaderId;
 
+    private final int transformationMatrixLocation;
+
     public ShaderProgram() {
         vertexShaderId = loadShader(VERTEX_SHADER_FILE, GL20.GL_VERTEX_SHADER);
         fragmentShaderId = loadShader(FRAGMENT_SHADER_FILE, GL20.GL_FRAGMENT_SHADER);
         shaderProgramId = createShaderProgram(vertexShaderId, fragmentShaderId);
+        transformationMatrixLocation = GL20.glGetUniformLocation(shaderProgramId, TRANSFORMATION_MATRIX_NAME);
+    }
+
+    public void loadTransformationMatrix(Matrix4f transformationMatrix) {
+        transformationMatrix.store(matrixBuffer);
+        matrixBuffer.flip();
+        GL20.glUniformMatrix4(transformationMatrixLocation, false, matrixBuffer);
     }
 
     public void start() {

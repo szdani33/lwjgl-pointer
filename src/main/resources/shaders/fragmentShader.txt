@@ -1,10 +1,9 @@
 #version 400 core
 
-in float d;
+in float colorInfo;
 
 out vec4 color;
 
 void main() {
-    float c = 1.1 - d;
-    color = vec4(c, c, c, 1);
+    color = vec4(1.0 - colorInfo * 5, 1.0 - colorInfo * 6, 1.0 - colorInfo * 3, 1.0);
 }

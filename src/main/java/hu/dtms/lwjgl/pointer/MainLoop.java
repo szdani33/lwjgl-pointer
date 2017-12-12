@@ -1,6 +1,7 @@
 package hu.dtms.lwjgl.pointer;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Matrix4f;
 
 public class MainLoop {
 
@@ -25,12 +26,18 @@ public class MainLoop {
             0, 1, 2,
             0, 2, 3
     };
+    private static final Matrix4f IDENTITY_MATRIX;
 
     private static Renderer renderer = new Renderer();
     private static Loader loader = new Loader();
     private static ShaderProgram shaderProgram;
     private static SimpleModel pointerModel;
     private static SimpleModel rectangleModel;
+
+    static {
+        IDENTITY_MATRIX = new Matrix4f();
+        IDENTITY_MATRIX.setIdentity();
+    }
 
     public static void main(String[] args) {
         DisplayManager.createDisplay();
@@ -40,8 +47,8 @@ public class MainLoop {
         while (!Display.isCloseRequested()) {
             renderer.prepare();
             shaderProgram.start();
-            renderer.render(rectangleModel);
-            renderer.render(pointerModel);
+            renderer.render(rectangleModel, shaderProgram, IDENTITY_MATRIX);
+            renderer.render(pointerModel, shaderProgram, IDENTITY_MATRIX);
             shaderProgram.stop();
             DisplayManager.updateDisplay();
         }
